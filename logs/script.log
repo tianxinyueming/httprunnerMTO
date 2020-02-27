@@ -1,0 +1,11 @@
+2020-02-27 17:22:56,268 [HttpRunnerManager:66] [views:login] [INFO]- user 登录成功
+2020-02-27 17:26:54,310 [manage:101] [views:log_out] [INFO]- user退出
+2020-02-27 17:28:01,406 [manage:66] [views:login] [INFO]- admin 登录成功
+2020-02-27 18:11:19,424 [manage:753] [common:update_include] [WARNING]- 依赖的 test：Addemployee 用例/配置已经被删除啦！！
+2020-02-27 18:12:08,594 [manage:753] [common:update_include] [WARNING]- 依赖的 test：Addemployee 用例/配置已经被删除啦！！
+2020-02-27 18:12:09,960 [manage:753] [common:update_include] [WARNING]- 依赖的 test：Addemployee 用例/配置已经被删除啦！！
+2020-02-27 18:12:11,645 [manage:753] [common:update_include] [WARNING]- 依赖的 test：Addemployee 用例/配置已经被删除啦！！
+2020-02-27 18:12:12,704 [manage:753] [common:update_include] [WARNING]- 依赖的 test：Addemployee 用例/配置已经被删除啦！！
+2020-02-27 18:12:37,802 [manage:753] [common:update_include] [WARNING]- 依赖的 test：Addemployee 用例/配置已经被删除啦！！
+2020-02-27 18:20:49,644 [httprunnerMTO:101] [views:log_out] [INFO]- admin退出
+2020-02-27 18:20:55,089 [httprunnerMTO:66] [views:login] [INFO]- admin 登录成功

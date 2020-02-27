@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}账号信息{% endblock %}
+{% load staticfiles %}
+{% block content %}
+
+    <div class=" admin-content">
+
+        <div class="admin-biaogelist">
+            <div class="listbiaoti am-cf">
+                <ul class="am-icon-flag on"> 账号信息</ul>
+                <dl class="am-icon-home" style="float: right;"> 系统设置： 账号信息 > 账号信息</dl>
+                <dl style="text-decoration:underline;float: right;"> <a href="#" onclick="edit_password();">修改密码</a></dl>
+            </div>
+            <div class="fbneirong">
+                <form class="form-horizontal" id="edit_account_info">
+                    <div class="form-group  has-feedback">
+                        <label class="control-label col-md-1 text-primary" for="username">账号：</label>
+                        <div class="col-md-5">
+                            <input type="text" class="form-control" id="username" disabled
+                                   aria-describedby="inputSuccess3Status" name="username" placeholder="用户账号"
+                                   value="{{ account_info.username }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group  has-feedback">
+                        <label class="control-label col-md-1 text-primary" for="email">邮箱：</label>
+                        <div class="col-md-5">
+                            <input type="text" class="form-control" id="email" disabled
+                                   aria-describedby="inputSuccess3Status" name="email"  placeholder="邮箱"
+                                   value="{{ account_info.email }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group  has-feedback">
+                        <label class="control-label col-md-1 text-primary" for="password">密码：</label>
+                        <div class="col-md-5">
+                            <input type="password" class="form-control" id="password" disabled
+                                   aria-describedby="inputSuccess3Status" name="password" placeholder=""
+                                   value="{{ account_info.password }}">
+                        </div>
+                    </div>
+
+
+                     <div class="form-group  has-feedback" id ="confirm_password_div">
+                        <label class="control-label col-md-1 text-primary" for="confirm_password">确认密码：</label>
+                        <div class="col-md-5">
+                            <input type="password" class="form-control" id="confirm_password"
+                                   aria-describedby="inputSuccess3Status" name="confirm_password" placeholder="确认密码"
+                                   value="">
+                        </div>
+                    </div>
+
+
+
+                    <div class="am-form-group am-cf" id="edit_submit">
+                        <div class="you" style="margin-left: 8%;">
+                            <button type="button" class="am-btn am-btn-success am-radius"
+                                    onclick="submit_edit_password()">点 击 提 交
+                            </button>&nbsp;
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+     <script>
+         $('#confirm_password_div').hide();
+         $('#edit_submit').hide();
+
+         function edit_password() {
+             $('#confirm_password_div').show();
+             $('#edit_submit').show();
+             $('#password').val('');
+             $('#password').attr("disabled", false);
+         }
+
+         function submit_edit_password() {
+             var data = $('#edit_account_info').serializeJSON();
+
+             var password = $('#password').val();
+             var confirm_password = $('#confirm_password').val();
+             if (password === '') {
+                 myAlert("密码不能为空");
+                 return
+             }
+             if (confirm_password !== password) {
+                 myAlert("确认密码不一致");
+                 return
+             }
+             var data ={
+                 "password":password
+             };
+
+             $.ajax({
+                 type: 'post',
+                 url: '/api/edit_account_info/',
+                 data: JSON.stringify(data),
+                 contentType: "application/json",
+                 success: function (data) {
+                     if (data !== 'ok') {
+                         if (data.indexOf('/api/') !== -1) {
+                             window.location.href = data;
+                         } else {
+                             myAlert(data);
+                         }
+                     } else {
+                         window.location.reload();
+                     }
+                 },
+                 error: function () {
+                     myAlert('Sorry，服务器可能开小差啦, 请重试!');
+                 }
+             });
+
+         }
+
+
+
+     </script>
+
+    </div>
+
+{% endblock %}

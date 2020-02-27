@@ -1,0 +1,395 @@
+{% extends "base.html" %}
+{% block title %}新增服务关联{% endblock %}
+{% load staticfiles %}
+{% block content %}
+
+    <div class=" admin-content">
+
+        <div class="admin-biaogelist">
+
+            <div style="margin-top: 20px">
+                <div style="float: left; width: 40%; height: auto">
+                    <form class="form-horizontal" id="form_message">
+
+
+                        <div class="form-group">
+                            <div class="input-group col-md-10 col-md-offset-1">
+                                <div class="input-group-addon" style="color: #0a628f">服务名称</div>
+                                 <input type="text" name="service_name" value="{{ info.service_name }}" class="form-control" id="service_name"
+                                       placeholder="所属服务名称">
+                            </div>
+                        </div>
+
+                         <div class="form-group">
+                            <div class="input-group col-md-10 col-md-offset-1">
+                                <div class="input-group-addon" style="color: #0a628f">服务版本</div>
+                                 <input type="text" name="service_version" value="{% if info.service_version %}{{ info.service_version }} {% endif %}" class="form-control" id="service_version"
+                                       placeholder="所属服务版本">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="input-group col-md-10 col-md-offset-1">
+                                <div class="input-group-addon" style="color: #0a628f;width: 82px">描述</div>
+                                <input type="text" name="remark" value="{{ info.remark }}" class="form-control" id="remark"
+                                       placeholder="描述">
+                            </div>
+                        </div>
+
+
+                         <div class="form-group">
+                            <div class="input-group col-md-10 col-md-offset-1">
+                                <div class="input-group-addon" style="color: #0a628f">关联类型</div>
+                                <select id='relation_type_select' onchange="relation_change();" name="project" class="selectpicker" data-live-search="false">
+                                    <option value="0">请选择</option>
+                                    <option value="1">项目</option>
+                                    <option value="2">模块</option>
+                                    <option value="3">套件</option>
+                                    <option value="4">用例</option>
+                                    <option value="5">服务</option>
+                                </select>
+                            </div>
+                        </div>
+
+                      <div id="project_div">
+                        <div class="form-group">
+                            <div class="input-group col-md-10 col-md-offset-1">
+                                <div class="input-group-addon" style="color: #0a628f">项目列表</div>
+                                <select id='project_select' name="project" class="selectpicker" data-live-search="true">
+                                    <option value="请选择">请选择</option>
+                                    {% for foo in project %}
+                                        <option value="{{ foo.id }}">{{ foo.project_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                      </div>
+
+                        <div class="form-group" id="belong_project_div">
+                            <div class="input-group col-md-10 col-md-offset-1">
+                                <div class="input-group-addon" style="color: #0a628f">项目列表</div>
+                                <select id='belong_project' name="project" class="selectpicker" data-live-search="true"
+                                        onchange="auto_load2('#belong_project', '/api/add_case/', '#belong_module_id', 'module')">
+                                    <option value="请选择">请选择</option>
+                                    {% for foo in project %}
+                                        <option value="{{ foo.project_name }}">{{ foo.project_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id ='belong_module_div' >
+                            <div class="input-group col-md-10 col-md-offset-1">
+                                <div class="input-group-addon" style="color: #0a628f">模块列表</div>
+                                <select id="belong_module_id" name="module" class="selectpicker" data-live-search="true"
+                                        onchange="auto_load2('#belong_module_id', '/api/add_case/', '#belong_case_id', 'case')">
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group" id="belong_case_div">
+                            <div class="input-group col-md-10 col-md-offset-1">
+                                <div class="input-group-addon" style="color: #0a628f">用例列表</div>
+                                <select multiple="multiple" size="20" id="belong_case_id" name="include"
+                                        style="width: 100%;">
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group" id="service_name_div">
+                            <div class="input-group col-md-10 col-md-offset-1">
+                                <div class="input-group-addon" style="color: #0a628f">用例所属服务</div>
+                                <input type="text" name="case_service_name" value="" class="form-control"
+                                       id="case_service_name"
+                                       placeholder="用例所属服务">
+                            </div>
+                        </div>
+
+
+
+                     <div id="module_div">
+                          <div class="form-group" >
+                            <div class="input-group col-md-10 col-md-offset-1">
+                                <div class="input-group-addon" style="color: #0a628f">项目列表</div>
+                                <select  id ='module_project_select' name="project" class="selectpicker" data-live-search="true"
+                                        onchange="auto_load2('#module_project_select', '/api/add_case/', '#project_module_id', 'module')">
+                                    <option value="请选择">请选择</option>
+                                    {% for foo in project %}
+                                        <option value="{{ foo.project_name }}">{{ foo.project_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                          </div>
+
+                         <div class="form-group">
+                            <div class="input-group col-md-10 col-md-offset-1">
+                                <div class="input-group-addon" style="color: #0a628f">模块</div>
+                                <select multiple="multiple" size="20" id="project_module_id" name="include"
+                                        style="width: 100%;">
+                                </select>
+                            </div>
+                        </div>
+                     </div>
+
+
+                       <div id="test_suite_div">
+                          <div class="form-group" >
+                            <div class="input-group col-md-10 col-md-offset-1">
+                                <div class="input-group-addon" style="color: #0a628f">项目列表</div>
+                                <select id='belong_project_suite' name="project" class="selectpicker" data-live-search="true"
+                                        onchange="auto_load2('#belong_project_suite', '/api/load_suite/', '#test_suite_id', 'module')">
+                                    <option value="请选择">请选择</option>
+                                    {% for foo in project %}
+                                        <option value="{{ foo.project_name }}">{{ foo.project_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                          </div>
+
+                         <div class="form-group">
+                            <div class="input-group col-md-10 col-md-offset-1">
+                                <div class="input-group-addon" style="color: #0a628f">测试套件</div>
+                                <select multiple="multiple" size="20" id="test_suite_id" name="include"
+                                        style="width: 100%;">
+                                </select>
+                            </div>
+                        </div>
+
+                       </div>
+
+
+
+                    </form>
+                </div>
+
+
+                <button id="add_to_right" style="margin-left: 4%; display: inline-block; margin-bottom: -50%">>>
+                </button>
+                <div id="right" style="float: right; width: 50%; margin-right: 1%;">
+                    <form class="form-inline">
+                       <div class="input-group">
+                            <div class="input-group-addon">运行环境</div>
+                                 <select class="form-control" id="env_name" name="env_name">
+                                    <option value="">自带环境</option>
+                                    {% for foo in env %}
+                                        <option value="{{ foo.base_url }}">{{ foo.env_name }}</option>
+                                    {% endfor %}
+
+                                </select>
+                        </div>
+
+                        <button id="create_suite" type="button" class="btn btn-primary">保存</button>
+                    </form>
+                    <nav>
+                        <ol id="pre_case">
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        $(function () {
+            $("#pre_case").sortable();
+            $("#pre_case").disableSelection();
+        });
+
+        var type_lable = function (type) {
+            var lable = "";
+            debugger
+            if (type === 1) {
+                lable = "<span style=\"color:red;\">项目: </span>"
+            } else if (type === 2) {
+                lable = "<span style=\"color:red;\">模块: </span>"
+            } else if (type === 3) {
+                lable = "<span style=\"color:red;\">套件: </span>"
+            } else if (type === 4) {
+                lable = "<span style=\"color:red;\">用例: </span>"
+            } else if (type === 5) {
+                lable = "<span style=\"color:red;\">服务: </span>"
+            }
+            return lable;
+        };
+
+
+        $('#project_div').hide();
+        $('#belong_project_div').hide();
+        $('#belong_module_div').hide();
+        $('#test_suite_div').hide();
+        $('#belong_case_div').hide();
+        $('#service_name_div').hide();
+        $('#module_div').hide();
+
+
+        var relation_change = function () {
+            var value = $('#relation_type_select').val();
+
+            $('#project_div').hide();
+            $('#belong_project_div').hide();
+            $('#belong_module_div').hide();
+            $('#test_suite_div').hide();
+            $('#belong_case_div').hide();
+            $('#service_name_div').hide();
+            $('#module_div').hide();
+
+            if (value === '1') {
+                 $('#project_div').show();
+            } else if (value === '2') {
+                $('#module_div').show();
+
+            } else if (value === '3') {
+                $('#test_suite_div').show();
+            } else if (value === '4') {
+                $('#belong_project_div').show();
+                $('#belong_module_div').show();
+                $('#belong_case_div').show();
+            } else if (value === '5') {
+                $('#service_name_div').show();
+            }
+
+        };
+
+
+        $('#add_to_right').on('click', function () {
+            var relation_type = $('#relation_type_select').val();
+            debugger;
+            if (relation_type === '1') {
+                var belong_project_id = $('#project_select').val();
+                var belong_project_name = $('#project_select option[value="' + belong_project_id + '"]').text();
+                var href = "<li style='margin-left:15px' id='1_" + belong_project_id + "'>" +
+                    type_lable(1) +
+                    "<a style='font-size: 20px' href='#' name = '1' id = " + belong_project_id + ">" + belong_project_name + "" +
+                    "</a><i class=\"js-remove\" onclick=remove_self('#1_" + belong_project_id + "')>✖</i></li>";
+                $("#pre_case").append(href);
+            } else if (relation_type === '2') {
+                var include = $('#project_module_id').val();
+                for (var key in include) {
+                    var module_id = include[key];
+                    var module_name = $('#project_module_id option[value="' + module_id + '"]').text();
+                    if (module_name !== '请选择') {
+                        var href = "<li style='margin-left:15px' id='2_" + module_id + "'>" +
+                            type_lable(2) +
+                            "<a style='font-size: 20px' href='/api/module_list/" + module_id + "/' name = '2' id = " + module_id + ">" + module_name + "" +
+                            "</a><i class=\"js-remove\" onclick=remove_self('#2_" + module_id + "')>✖</i></li>";
+                        $("#pre_case").append(href);
+                    }
+                }
+            } else if (relation_type === '3') {
+                var include = $('#test_suite_id').val();
+                for (var key in include) {
+                    var suite_id = include[key];
+                    var suite_name = $('#test_suite_id option[value="' + suite_id + '"]').text();
+                    if (suite_name !== '请选择') {
+                        var href = "<li style='margin-left:15px' id='3_" + suite_id + "'>" +
+                            type_lable(3) +
+                            "<a style='font-size: 20px' href='/api/edit_suite/" + suite_id + "/' name = '3' id = " + suite_id + ">" + suite_name + "" +
+                            "</a><i class=\"js-remove\" onclick=remove_self('#3_" + suite_id + "')>✖</i></li>";
+                        $("#pre_case").append(href);
+                    }
+                }
+            } else if (relation_type === '4') {
+                var include = $('#belong_case_id').val();
+                for (var key in include) {
+                    var case_id = include[key];
+                    var case_name = $('#belong_case_id option[value="' + include[key] + '"]').text();
+                    if (case_name !== '请选择') {
+                        var href = "<li style='margin-left:15px' id='4_" + case_id + "'>" +
+                            type_lable(4) +
+                            "<a style='font-size: 20px' href='/api/edit_case/" + case_id + "/' name = '4' id = " + case_id + ">" + case_name + "" +
+                            "</a><i class=\"js-remove\" onclick=remove_self('#4_" + case_id + "')>✖</i></li>";
+                        $("#pre_case").append(href);
+                    }
+                }
+
+            } else if (relation_type === '5') {
+                var case_service_name = $('#case_service_name').val();
+                var href = "<li style='margin-left:15px' id='5_" + case_service_name + "'>" +
+                    type_lable(5) +
+                    "<a style='font-size: 20px' href='#' name = '5' id = '" + case_service_name + "'>" + case_service_name + "" +
+                    "</a><i class=\"js-remove\" onclick=remove_self('#5_" + case_service_name + "')>✖</i></li>";
+                $("#pre_case").append(href);
+            }
+
+        });
+
+
+
+        $('#create_suite').on('click', function () {
+            var test_length = $('#pre_case li').length;
+            if ($('#suite_name').val() === '') {
+                myAlert('大虾，Suite Name不能为空啊');
+                return
+            }
+            if (test_length === 0) {
+                myAlert('大虾，是不是忘记添加用例啦');
+                return
+            }
+            var include = [];
+            var i = 0;
+            $("#pre_case li a").each(function () {
+                var relation_id = $(this).attr('id');
+                var relation_type = $(this).attr('name');
+                var relation_name = $(this).text();
+                include[i++] = {
+                    "relation_id": relation_id,
+                    "relation_type": relation_type,
+                    "relation_name": relation_name
+                };
+            });
+            const suite = {
+                'details': include,
+                'service_name': $('#service_name').val(),
+                'service_version': $('#service_version').val(),
+                'env_id': $("#env_id option:selected").val(),
+                'remark': $("#remark").val(),
+                'id': {{info.id }}
+            };
+            $.ajax({
+                type: 'post',
+                url: '/api/edit_service_config/',
+                data: JSON.stringify(suite),
+                contentType: "application/json",
+                success: function (data) {
+                    if (data === 'session invalid') {
+                        window.location.href = "/api/login/";
+                    } else {
+                        if (data.indexOf('/api/') != -1) {
+                            window.location.href = data;
+                        } else {
+                            myAlert(data);
+                        }
+                    }
+                },
+                error: function () {
+                    myAlert('Sorry，服务器可能开小差啦, 请重试!');
+                }
+            });
+
+        });
+
+        function remove_self(id) {
+            $(id).remove();
+        }
+
+
+        function init_data() {
+            {% for detail in details %}
+                var href = "<li style='margin-left:15px' id='{{ detail.relation_type }}_{{ detail.relation_id }}'>" +
+                    type_lable({{ detail.relation_type }}) +
+                    "<a style='font-size: 20px' href='#' name = '{{ detail.relation_type }}' id = '{{ detail.relation_id }}'>" + "{{ detail.relation_name }}" +
+                    "</a><i class=\"js-remove\" onclick=remove_self('#{{ detail.relation_type }}_{{ detail.relation_id }}')>✖</i></li>";
+                $("#pre_case").append(href);
+            {% endfor %}
+        }
+
+        init_data();
+
+
+    </script>
+
+
+{% endblock %}

@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+{% block title %}服务关联{% endblock %}
+{% load staticfiles %}
+{% block content %}
+
+
+       <div class="am-modal am-modal-prompt" tabindex="-1" id="my-copy">
+        <div class="am-modal-dialog">
+            <div style="font-size: medium;" class="am-modal-hd">复制服务关联</div>
+            <div class="am-modal-bd">
+                <form class="form-horizontal" id="copy_list">
+                    <div class="form-group">
+                        <label class="control-label col-sm-3" for="index"
+                               style="font-weight: inherit; font-size: small " hidden>索引值:</label>
+                        <div class="col-sm-9">
+                            <input name="index" type="text" class="form-control" id="index"
+                                   placeholder="索引值" value="" hidden>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-sm-3" for="name"
+                               style="font-weight: inherit; font-size: small ">服务名称:</label>
+                        <div class="col-sm-9">
+                            <input name="service_name" type="text" class="form-control" id="service_name"
+                                   placeholder="所属服务名称" value="{{ info.service_name }}">
+                        </div>
+                    </div>
+
+                     <div class="form-group">
+                        <label class="control-label col-sm-3" for="name"
+                               style="font-weight: inherit; font-size: small ">服务版本:</label>
+                        <div class="col-sm-9">
+                            <input name="service_version" type="text" class="form-control" id="service_version"
+                                   placeholder="所属服务版本" value="{{ info.service_version }}">
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="am-modal-footer">
+                <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+                <span class="am-modal-btn" data-am-modal-confirm>提交</span>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="am-modal am-modal-confirm" tabindex="-1" id="my-invalid">
+        <div class="am-modal-dialog">
+            <div class="am-modal-hd">提示</div>
+            <div class="am-modal-bd">
+                删除的数据将不可恢复，确定是否删除！
+            </div>
+            <div class="am-modal-footer">
+                <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+                <span class="am-modal-btn" data-am-modal-confirm>确定</span>
+            </div>
+        </div>
+    </div>
+
+
+     <div class="am-modal am-modal-confirm" tabindex="-1" id="select_env">
+        <div class="am-modal-dialog">
+            <div class="am-modal-hd">&nbsp;</div>
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-3"
+                           style="font-weight: inherit; font-size: small ">运行环境:</label>
+                    <div class="col-sm-8">
+                        <select class="form-control" id="env_name" name="env_name">
+                            <option value="">自带环境</option>
+                            {% for foo in env %}
+                                <option value="{{ foo.base_url }}">{{ foo.env_name }}</option>
+                            {% endfor %}
+
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-3" for="report_name"
+                           style="font-weight: inherit; font-size: small ">报告名称：</label>
+                    <div class="col-sm-8">
+                        <input name="report_name" type="text" id="report_name" class="form-control"
+                               placeholder="默认时间戳命名" value="" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-3"
+                           style="font-weight: inherit; font-size: small ">执行方式:</label>
+                    <div class="col-sm-8">
+                        <select class="form-control" id="mode" name="mode">
+                            <option value="true">同步(执行完立即返回报告)</option>
+                            <option value="false">异步(后台执行，完毕后可查看报告)</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+            <div class="am-modal-footer">
+                <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+                <span class="am-modal-btn" data-am-modal-confirm>确定</span>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="admin-biaogelist">
+        <div class="listbiaoti am-cf">
+            <ul class="am-icon-flag on"> 服务关联</ul>
+            <dl class="am-icon-home" style="float: right;"> 当前位置： 测试计划 > <a href="#">服务关联</a></dl>
+            <dl>
+                <button type="button" class="am-btn am-btn-danger am-round am-btn-xs am-icon-plus"
+                        onclick="location='/api/add_service_config/'">新增
+                </button>
+
+            </dl>
+
+        </div>
+
+        <div class="am-btn-toolbars am-btn-toolbar am-kg am-cf">
+            <form id="pro_filter" method="post" action="/api/service_config_list/1/">
+                <ul>
+                    <li style="padding-top: 5px"><input style="width: 150px" value="{{ info.service_name }}" type="text" name="service_name"
+                                                       class="form-control"
+                                                        placeholder="所属服务名称"/></li>
+                     <li style="padding-top: 5px">
+                         <input style="width: 150px" value="{{ info.service_version }}" type="text" name="service_version"
+                                                        class="form-control"
+                                                        placeholder="所属服务版本"/>
+                     </li>
+
+                    <li>
+
+                        <button class="am-btn am-radius am-btn-xs am-btn-success"
+                                style="padding-top: 5px; margin-top: 6px;height:30px">查询
+                        </button>
+                    </li>
+                </ul>
+            </form>
+        </div>
+        <form class="am-form am-g" id="report_list" name="report_list">
+            <table width="100%" class="am-table am-table-bordered am-table-radius am-table-striped">
+                <thead>
+                <tr class="am-success">
+                    <th class="table-check"><input type="checkbox" id="select_all"/></th>
+                    <th class="table-title">序号</th>
+                    <th class="table-type">服务名称</th>
+                    <th class="table-title">服务版本</th>
+                    <th class="table-title">描述</th>
+                    <th class="table-title">创建人</th>
+                    <th class="table-date am-hide-sm-only">创建时间</th>
+                    <th width="163px" class="table-title">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for foo in service %}
+                    <tr>
+                        <td><input type="checkbox" name="report_{{ foo.id }}" value="{{ foo.id }}"/></td>
+                        <td>{{ forloop.counter }}</td>
+                        <td><a href="/api/edit_service_config?id={{ foo.id }}">{{ foo.service_name }}</a></td>
+                        <td>
+                             {% if foo.service_version %}
+                                {{ foo.service_version }}
+                            {% endif %}
+                        </td>
+                        <td>
+                             {% if foo.remark %}
+                                {{ foo.remark }}
+                            {% endif %}
+                        </td>
+                        <td>{{ foo.creator }}</td>
+                        <td>{{ foo.create_time }}</td>
+                         <td>
+                            <div class="am-btn-toolbar">
+                                <div class="am-btn-group am-btn-group-xs">
+                                      <button type="button"
+                                            class="am-btn am-btn-default am-btn-xs am-text-secondary am-round"
+                                            data-am-popover="{content: '运行', trigger: 'hover focus'}"
+                                            onclick="run('{{ foo.id }}')">
+                                        <span class="am-icon-bug"></span></button>
+                                      <button type="button"
+                                            class="am-btn am-btn-default am-btn-xs am-text-danger am-round"
+                                            data-am-popover="{content: '复制', trigger: 'hover focus'}"
+                                            onclick="copy('#copy_list', '{{ foo.id }}')"><span
+                                            class="am-icon-copy"></span></button>
+                                    <button type="button"
+                                            class="am-btn am-btn-default am-btn-xs am-text-danger am-round"
+                                            data-am-popover="{content: '删除', trigger: 'hover focus'}"
+                                            onclick="del('{{ foo.id }}')"><span
+                                            class="am-icon-trash-o"></span></button>
+                                </div>
+                            </div>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <ul class="am-pagination am-fr">
+                {{ page_list }}
+            </ul>
+            <hr/>
+        </form>
+    </div>
+
+ <script type="text/javascript">
+     function del(id) {
+         $('#my-invalid').modal({
+             relatedTarget: this,
+             onConfirm: function () {
+                 var data = {
+                     "id": id,
+                 };
+                 $.ajax({
+                     type: 'post',
+                     url: '/api/del_service_config/',
+                     data: JSON.stringify(data),
+                     contentType: "application/json",
+                     success: function (data) {
+                         if (data !== 'ok') {
+                             myAlert(data);
+                         } else {
+                             window.location.reload();
+                         }
+                     },
+                     error: function () {
+                         myAlert('Sorry，服务器可能开小差啦, 请重试!');
+                     }
+                 });
+             },
+             onCancel: function () {
+             }
+         });
+
+     }
+
+
+      function copy(id, index) {
+            $('#index').val(index);
+            $('#my-copy').modal({
+                relatedTarget: this,
+                onConfirm: function () {
+                    copy_data_ajax(id, '/api/copy_service_config/')
+                },
+                onCancel: function () {
+                }
+            });
+        }
+
+
+        $('#mode').change(function () {
+            if ($('#mode').val() === 'false') {
+                $('#report_name').removeAttr("readonly");
+            } else {
+                $('#report_name').attr('readonly', 'readonly');
+            }
+        });
+
+        function run(id) {
+            $('#select_env').modal({
+                relatedTarget: this,
+                onConfirm: function () {
+                    var mode = $('#mode').val()
+                    var data = {
+                        "id": id,
+                        "env_name": $('#env_name').val(),
+                        "mode": mode,
+                        'report_name': $('#report_name').val()
+                    };
+
+                    if (mode === "true") {
+                        post('/api/run_service/', data);
+                    } else {
+                        $.ajax({
+                            type: 'post',
+                            url: '/api/run_service/',
+                            data: JSON.stringify(data),
+                            contentType: "application/json",
+                            success: function (data) {
+                                myAlert(data);
+                            },
+                            error: function () {
+                                myAlert('Sorry，服务器可能开小差啦, 请重试!');
+                            }
+                        });
+                    }
+                },
+                onCancel: function () {
+                }
+            });
+        }
+
+        $('#select_all').click(function () {
+            var isChecked = $(this).prop("checked");
+            $("input[name^='project']").prop("checked", isChecked);
+        })
+    </script>
+
+{% endblock %}

@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block title %}查看报告{% endblock %}
+{% load staticfiles %}
+{% block content %}
+    <div class="admin-biaogelist">
+        <div class="listbiaoti am-cf">
+            <ul class="am-icon-flag on"> 报告列表</ul>
+            <dl class="am-icon-home" style="float: right;"> 当前位置： 报告管理 > <a href="#">报告展示</a></dl>
+        </div>
+
+        <div class="am-btn-toolbars am-btn-toolbar am-kg am-cf">
+            <form id="pro_filter" method="post" action="/api/report_list/1/">
+                <ul>
+                    <li style="padding-top: 5px"><input style="width: 150px" value="{{ info.report_name }}" type="text" name="report_name"
+                                                         class="form-control"
+                                                        placeholder="报告名称"/></li>
+
+                     <li style="padding-top: 5px">
+                        <select name="type" id="type" class="selectpicker" data-live-search="false">
+                             <option value="">请选择</option>
+                             <option value="test" {% if info.type == 'test' %} selected  {% endif %}>用例</option>
+                             <option value="suite" {% if info.type == 'suite' %} selected  {% endif %}>套件</option>
+                             <option value="module" {% if info.type == 'module' %} selected  {% endif %}>模块</option>
+                             <option value="project" {% if info.type == 'project' %} selected  {% endif %}>项目</option>
+                             <option value="project" {% if info.type == 'service' %} selected  {% endif %}>服务</option>
+                        </select>
+                     </li>
+
+                      <li style="padding-top: 5px">
+                        <select name="status" id="status" class="selectpicker" data-live-search="false">
+                             <option value="">请选择</option>
+                             <option value="1" {% if info.status == '1' %} selected  {% endif %}>通过</option>
+                             <option value="0" {% if info.status == '0' %} selected  {% endif %}>不通过</option>
+                             <option value="2" {% if info.status == '2' %} selected  {% endif %}>异常</option>
+                        </select>
+                     </li>
+
+                     <li style="padding-top: 5px">
+                         <input style="width: 100px" value="{{ info.executor }}" type="text" name="executor"
+                                                         class="form-control"
+                                                        placeholder="执行人"/>
+                     </li>
+
+                    <li>
+
+                        <button class="am-btn am-radius am-btn-xs am-btn-success"
+                                style="padding-top: 5px; margin-top: 6px;height:30px">查询
+                        </button>
+                    </li>
+                </ul>
+            </form>
+        </div>
+        <form class="am-form am-g" id="report_list" name="report_list">
+            <table width="100%" class="am-table am-table-bordered am-table-radius am-table-striped">
+                <thead>
+                <tr class="am-success">
+                    <th class="table-check"><input type="checkbox" id="select_all"/></th>
+                    <th class="table-title">序号</th>
+                    <th class="table-type">报告名称</th>
+                     <th class="table-title">报表类型</th>
+                    <th class="table-date am-hide-sm-only">开始时间</th>
+                    <th class="table-title">测试结果</th>
+                    <th class="table-title">总计用例</th>
+                    <th class="table-title">成功用例</th>
+                    <th class="table-title">执行人</th>
+                    <th width="163px" class="table-title">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for foo in report %}
+                    <tr>
+                        <td><input type="checkbox" name="report_{{ foo.id }}" value="{{ foo.id }}"/></td>
+                        <td>{{ forloop.counter }}</td>
+                        <td><a href="/api/view_report/{{ foo.id }}">{{ foo.report_name }}</a></td>
+
+                        {% if foo.type == 'project' %}
+                            <td>项目</td>
+                        {% elif foo.type == 'module' %}
+                            <td>模块</td>
+                        {% elif foo.type == 'suite' %}
+                            <td>套件</td>
+                        {% elif foo.type == 'service' %}
+                            <td>服务</td>
+                        {% else %}
+                            <td>用例</td>
+                        {% endif %}
+
+                        <td>{{ foo.start_at }}</td>
+                        {% if foo.status == 1 %}
+                            <td style="color: #00e359;  font-size: 15px ">通过</td>
+                        {% elif foo.status == 0 %}
+                            <td style="color: red;  font-size: 15px">不通过</td>
+                        {% elif foo.status == 2 %}
+                            <td style="color: red;  font-size: 15px">异常</td>
+                        {% else %}
+                            <td style="color: red;  font-size: 15px">{{ foo.status }}</td>
+                        {% endif %}
+                        <td>{{ foo.testsRun }}</td>
+                        <td>{{ foo.successes }}</td>
+                        <td>{{ foo.executor }}</td>
+                        <td>
+                            <div class="am-btn-toolbar">
+                                <div class="am-btn-group am-btn-group-xs">
+                                    <button type="button"
+                                            class="am-btn am-btn-default am-btn-xs am-text-danger am-round"
+                                            data-am-popover="{content: '下载', trigger: 'hover focus'}"
+                                            onclick="download_report('{{ foo.id }}')"><span
+                                            class="am-icon-download"></span></button>
+                                    <button type="button"
+                                            class="am-btn am-btn-default am-btn-xs am-text-danger am-round"
+                                            data-am-popover="{content: '删除', trigger: 'hover focus'}"
+                                            onclick="del_data_ajax('{{ foo.id }}', '/api/report_list/1/')"><span
+                                            class="am-icon-trash-o"></span></button>
+                                </div>
+                            </div>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <ul class="am-pagination am-fr">
+                {{ page_list }}
+            </ul>
+            <hr/>
+        </form>
+    </div>
+    <script type="text/javascript">
+        $('#select_all').click(function () {
+            var isChecked = $(this).prop("checked");
+            $("input[name^='report']").prop("checked", isChecked);
+        })
+
+        function download_report(id) {
+            var $eleForm = $("<form method='get'></form>");
+            $eleForm.attr("action", "/api/download_report/"+id);
+            $(document.body).append($eleForm);
+            $eleForm.submit();
+        }
+
+    </script>
+
+{% endblock %}
